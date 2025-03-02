@@ -59,18 +59,23 @@
                 // ✅ Convert JSON to Object
                 let qrData = JSON.parse(decodedData);
 
-                // ✅ Display Only Meeting ID & URL
-                let displayText = `✅ Scanned Successfully!\n\n` +
-                                  `📌 Meeting ID: ${qrData["Meeting ID"]}\n` +
-                                  `🔗 URL: <a href="${qrData["URL"]}" target="_blank">${qrData["URL"]}</a>`;
+                // ✅ Extract Meeting ID & URL
+                let meetingId = qrData["Meeting ID"];
+                let meetingUrl = qrData["URL"];
 
-                document.getElementById('result').innerHTML = displayText;
+                // ✅ Display Scan Result
+                document.getElementById('result').innerHTML = `✅ Scanned Successfully!<br>📌 Meeting ID: ${meetingId}`;
                 document.getElementById('result').style.display = "block";
                 document.getElementById('newScan').style.display = "block";
 
                 // Stop scanning
                 html5QrcodeScanner.clear();
                 document.getElementById('reader').style.display = "none";
+
+                // ✅ Redirect to Meeting URL After 3 Seconds
+                setTimeout(() => {
+                    window.location.href = meetingUrl;
+                }, 3000);
 
             } catch (error) {
                 console.error("Invalid QR Code or Decoding Error:", error);
