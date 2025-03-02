@@ -375,6 +375,7 @@ class DashboardController extends Controller
             } elseif ($meeting->present_status === 'Present' && is_null($meeting->out_time)) {
                 // Second Scan → Set `out_time`
                 $meeting->update([
+                    'status' => 'Completed',
                     'out_time' => $currentTime
                 ]);
 
