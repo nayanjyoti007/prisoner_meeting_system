@@ -340,7 +340,75 @@ class DashboardController extends Controller
     //     return view('admin.pending_meeting_request.list', compact('kyc_pending'));
     // }
 
-    public function scanner(){
+    public function scanner()
+    {
         return view('admin.scanner');
+    }
+
+    public function scanQrCode(Request $request)
+    {
+        $request->validate([
+            'qr_code_data' => 'required|string'
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // ✅ Decode QR Data (Base64 Decoding)
+            $decodedData = json_decode(base64_decode($request->qr_code_data), true);
+
+            if (!$decodedData || !isset($decodedData['Meeting ID'])) {
+                return response()->json(['success' => false, 'message' => 'Invalid QR Code.'], 400);
+            }
+
+            // ✅ Get Meeting
+            $meeting = MeetingRequest::where('id', $decodedData['Meeting ID'])->firstOrFail();
+
+            if ($meeting->status !== 'Approved') {
+                return response()->json(['success' => false, 'message' => 'Meeting is not approved.'], 400);
+            }
+
+            $currentTime = Carbon::now();
+
+            // ✅ Update Attendance in MeetingRequest Table
+            if ($meeting->present_status === 'Pending') {
+                // First Scan → Mark Present & Set `in_time`
+                $meeting->update([
+                    'present_status' => 'Present',
+                    'in_time' => $currentTime
+                ]);
+
+                $message = '✅ Visitor checked in successfully!';
+            } elseif ($meeting->present_status === 'Present' && is_null($meeting->out_time)) {
+                // Second Scan → Set `out_time`
+                $meeting->update([
+                    'out_time' => $currentTime
+                ]);
+
+                $message = '✅ Visitor checked out successfully!';
+            } else {
+                $message = '⚠️ Visitor already checked out!';
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'meeting_id' => $meeting->id,
+                'present_status' => $meeting->present_status,
+                'in_time' => $meeting->in_time,
+                'out_time' => $meeting->out_time
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::error("QR Code Scan Failed: " . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while updating attendance.'
+            ], 500);
+        }
     }
 }
