@@ -50,13 +50,27 @@
         let html5QrcodeScanner;
 
         function onScanSuccess(qrCodeMessage) {
-            document.getElementById('result').innerHTML = "✅ Scanned Successfully!\n\n" + qrCodeMessage;
-            document.getElementById('result').style.display = "block";
-            document.getElementById('newScan').style.display = "block";
+            try {
+                let qrData = JSON.parse(qrCodeMessage); // ✅ Parse JSON data
+                let displayText = `✅ Scanned Successfully!\n\n`;
 
-            // Stop scanning
-            html5QrcodeScanner.clear();
-            document.getElementById('reader').style.display = "none";
+                // ✅ Display Data Properly
+                for (let key in qrData) {
+                    displayText += `📌 ${key}: ${qrData[key]}\n`;
+                }
+
+                document.getElementById('result').innerHTML = displayText;
+                document.getElementById('result').style.display = "block";
+                document.getElementById('newScan').style.display = "block";
+
+                // Stop scanning
+                html5QrcodeScanner.clear();
+                document.getElementById('reader').style.display = "none";
+            } catch (error) {
+                console.error("QR Parsing Error:", error);
+                document.getElementById('result').innerHTML = "❌ Invalid QR Code Format!";
+                document.getElementById('result').style.display = "block";
+            }
         }
 
         function onScanError(errorMessage) {
@@ -87,5 +101,3 @@
 
 </body>
 </html>
-
-Visitor and URL why not showing
