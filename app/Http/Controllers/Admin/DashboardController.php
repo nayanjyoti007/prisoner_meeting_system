@@ -343,9 +343,9 @@ class DashboardController extends Controller
 
     public function scannerUpdate(Request $request, $id)
     {
-        $request->validate([
-            'id' => 'required|numeric|exists:meeting_requests,id'
-        ]);
+        // $request->validate([
+        //     'id' => 'required|numeric|exists:meeting_requests,id'
+        // ]);
 
         try {
             DB::beginTransaction();
