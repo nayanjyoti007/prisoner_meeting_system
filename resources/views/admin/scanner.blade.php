@@ -47,15 +47,15 @@
     <button id="newScan" onclick="startNewScan()">🔄 New Scan</button>
 
     <script>
-        let html5QrcodeScanner;
-
         function onScanSuccess(qrCodeMessage) {
             try {
-                // Decode Base64 Data
-                let decodedData = atob(qrCodeMessage);
-                let qrData = JSON.parse(decodedData); // Convert JSON to Object
+                // ✅ Decode Base64 First
+                let decodedData = atob(qrCodeMessage.trim());
 
-                // Display Data in Readable Format
+                // ✅ Convert JSON to Object
+                let qrData = JSON.parse(decodedData);
+
+                // ✅ Display Data in Readable Format
                 let displayText = `✅ Scanned Successfully!\n\n` +
                                   `📌 Meeting ID: ${qrData["Meeting ID"]}\n` +
                                   `👤 Visitor: ${qrData["Visitor"]}\n` +
@@ -64,7 +64,7 @@
                                   `📅 Date: ${qrData["Date"]}\n` +
                                   `⏰ Time: ${qrData["Time"]}\n` +
                                   `📜 Status: ${qrData["Status"]}\n\n` +
-                                  `🔗 URL: ${qrData["URL"]}`;
+                                  `🔗 URL: <a href="${qrData["URL"]}" target="_blank">${qrData["URL"]}</a>`;
 
                 document.getElementById('result').innerHTML = displayText;
                 document.getElementById('result').style.display = "block";
@@ -80,32 +80,8 @@
                 document.getElementById('result').style.display = "block";
             }
         }
-
-        function onScanError(errorMessage) {
-            console.error("QR Scan Error:", errorMessage);
-        }
-
-        function startNewScan() {
-            document.getElementById('result').style.display = "none";
-            document.getElementById('newScan').style.display = "none";
-            document.getElementById('reader').style.display = "block";
-
-            // Restart the scanner
-            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
-            html5QrcodeScanner.render(onScanSuccess, onScanError);
-        }
-
-        // Ensure camera access before starting scanner
-        navigator.mediaDevices.getUserMedia({ video: true })
-        .then(function() {
-            startNewScan(); // Start the scanner on page load
-        })
-        .catch(function(error) {
-            console.error("Camera Access Denied:", error);
-            document.getElementById('result').innerHTML = "🚫 Camera access denied. Please enable camera permissions.";
-            document.getElementById('result').style.display = "block";
-        });
     </script>
+
 
 </body>
 </html>

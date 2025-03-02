@@ -278,7 +278,7 @@ class DashboardController extends Controller
                     "URL" => url("scanner-update/" . encrypt($meeting->id)) // ✅ Encrypted URL
                 ];
 
-                // ✅ Convert JSON to Base64 (Fix Encoding Issues)
+                // ✅ Convert JSON to Base64 (Ensure Proper Encoding)
                 $encodedQrData = base64_encode(json_encode($qrCodeData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 
                 // ✅ Generate & Save QR Code
