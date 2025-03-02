@@ -30,6 +30,7 @@ Route::group(['namespace' => 'Admin'], function () {
 
     Route::group(['middleware' => 'auth:admin', 'prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
+        Route::get('/scanner', [DashboardController::class, 'scanner'])->name('scanner');
 
         Route::get('/pending-visitor-account-kyc-verification', [DashboardController::class, 'kycVerification'])->name('pending-visitor-account-kyc-verification');
         Route::get('/pending-visitor-account-kyc-verification-details/{id}', [DashboardController::class, 'kycVerificationDetails']);

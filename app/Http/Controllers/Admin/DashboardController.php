@@ -339,4 +339,8 @@ class DashboardController extends Controller
     //         ->get();
     //     return view('admin.pending_meeting_request.list', compact('kyc_pending'));
     // }
+
+    public function scanner(){
+        return view('admin.scanner');
+    }
 }
