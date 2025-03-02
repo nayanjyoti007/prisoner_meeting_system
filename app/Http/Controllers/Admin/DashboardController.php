@@ -284,8 +284,6 @@ class DashboardController extends Controller
 
                 // ✅ Store Path in Database
                 $meeting->update(['qr_code' => $qrCodePath]);
-
-
             } elseif ($request->meeting_status === 'Rejected') {
                 $updateData['rejected_at'] = now();
                 $updateData['rejected_reason'] = $request->rejected_reason;
@@ -345,29 +343,17 @@ class DashboardController extends Controller
 
     public function scannerUpdate(Request $request, $id)
     {
-        Log::info('Student ID', [$id]);
-
-        dd($id);
-
         $request->validate([
-            'qr_code_data' => 'required|string'
+            'id' => 'required|numeric|exists:meeting_requests,id'
         ]);
 
         try {
             DB::beginTransaction();
 
-            // ✅ Decode QR Data (Base64 Decoding)
-            $decodedData = json_decode(base64_decode($request->qr_code_data), true);
+            // ✅ Get Meeting by ID (Directly from URL)
+            $meeting = MeetingRequest::where('id', $id)->firstOrFail();
 
-            Log::info('Student ID', [$decodedData]);
-
-            if (!$decodedData || !isset($decodedData['Meeting ID'])) {
-                return response()->json(['success' => false, 'message' => 'Invalid QR Code.'], 400);
-            }
-
-            // ✅ Get Meeting
-            $meeting = MeetingRequest::where('id', $decodedData['Meeting ID'])->firstOrFail();
-
+            // ✅ Ensure Meeting is Approved
             if ($meeting->status !== 'Approved') {
                 return response()->json(['success' => false, 'message' => 'Meeting is not approved.'], 400);
             }
