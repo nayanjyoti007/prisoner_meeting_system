@@ -360,7 +360,8 @@ class DashboardController extends Controller
 
             $currentTime = Carbon::now();
 
-            dd($meeting);
+            Log::info('Student ID', [$meeting]);
+
 
             // ✅ Update Attendance in MeetingRequest Table
             if ($meeting->present_status === 'Pending') {
