@@ -17,7 +17,6 @@
             font-weight: bold;
             margin-top: 10px;
             text-align: center;
-            white-space: pre-line;
             background: #f4f4f4;
             padding: 10px;
             border-radius: 5px;
@@ -50,13 +49,22 @@
         let html5QrcodeScanner;
 
         function onScanSuccess(qrCodeMessage) {
-            document.getElementById('result').innerHTML = "✅ Scanned Successfully!\n\n" + qrCodeMessage;
-            document.getElementById('result').style.display = "block";
-            document.getElementById('newScan').style.display = "block";
+            try {
+                let qrData = JSON.parse(qrCodeMessage);
 
-            // Stop scanning
-            html5QrcodeScanner.clear();
-            document.getElementById('reader').style.display = "none";
+                // Show only the encrypted URL
+                document.getElementById('result').innerHTML = "🔐 Encrypted Data:\n\n" + qrData.URL;
+                document.getElementById('result').style.display = "block";
+                document.getElementById('newScan').style.display = "block";
+
+                // Stop scanning
+                html5QrcodeScanner.clear();
+                document.getElementById('reader').style.display = "none";
+            } catch (error) {
+                console.error("Invalid QR Code:", error);
+                document.getElementById('result').innerHTML = "⚠️ Invalid QR Code!";
+                document.getElementById('result').style.display = "block";
+            }
         }
 
         function onScanError(errorMessage) {
@@ -87,5 +95,3 @@
 
 </body>
 </html>
-
-Visitor and URL why not showing
