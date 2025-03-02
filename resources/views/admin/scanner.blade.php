@@ -17,6 +17,10 @@
             font-weight: bold;
             margin-top: 10px;
             text-align: center;
+            white-space: pre-line; /* Preserve line breaks */
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -24,30 +28,11 @@
 
     <h2 style="text-align:center;">📷 Scan Your QR Code</h2>
     <div id="reader"></div> <!-- QR Code Scanner Container -->
-    <p id="result"></p>
+    <p id="result">🔍 Waiting for scan...</p>
 
     <script>
         function onScanSuccess(qrCodeMessage) {
-            document.getElementById('result').innerHTML = "✅ Scanned Successfully! Sending Data...";
-
-            // ✅ Send QR Code Data to Backend for Attendance Update
-            fetch('https://ccc.in/demo/pms/public/admin/scanner-update', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ qr_code_data: qrCodeMessage })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('result').innerHTML = "✅ " + data.message;
-                } else {
-                    document.getElementById('result').innerHTML = "❌ " + data.message;
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                document.getElementById('result').innerHTML = "❌ Failed to process QR Code.";
-            });
+            document.getElementById('result').innerHTML = "✅ Scanned Successfully!\n\n" + qrCodeMessage;
         }
 
         function onScanError(errorMessage) {
