@@ -269,11 +269,6 @@ class DashboardController extends Controller
 
                 $qrCodeData = [
                     "Meeting ID" => $meeting->id,
-                    "Visitor" => $meeting->visitor->fullname,
-                    "Prisoner" => $meeting->prisoner->name,
-                    "Jail" => $meeting->jail->name,
-                    "Date" => $meeting->meeting_date,
-                    "Time" => $meeting->meeting_time,
                     "Status" => "Approved",
                     "URL" => url("scanner-update/" . encrypt($meeting->id)) // ✅ Encrypted URL
                 ];

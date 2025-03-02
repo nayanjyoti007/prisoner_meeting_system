@@ -6,28 +6,25 @@
     <title>QR Code Scanner</title>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 20px;
-        }
         #reader {
             width: 100%;
             max-width: 400px;
             margin: auto;
+            text-align: center;
         }
         #result {
             font-size: 18px;
             font-weight: bold;
             margin-top: 10px;
+            text-align: center;
             white-space: pre-line;
             background: #f4f4f4;
             padding: 10px;
             border-radius: 5px;
-            display: none;
+            display: none; /* Hide initially */
         }
         #newScan {
-            display: none;
+            display: none; /* Hide initially */
             margin: 10px auto;
             padding: 10px 15px;
             font-size: 16px;
@@ -44,7 +41,7 @@
 </head>
 <body>
 
-    <h2>📷 Scan Your QR Code</h2>
+    <h2 style="text-align:center;">📷 Scan Your QR Code</h2>
     <div id="reader"></div> <!-- QR Code Scanner Container -->
     <p id="result"></p>
     <button id="newScan" onclick="startNewScan()">🔄 New Scan</button>
@@ -53,27 +50,13 @@
         let html5QrcodeScanner;
 
         function onScanSuccess(qrCodeMessage) {
-            try {
-                let qrData = JSON.parse(qrCodeMessage); // ✅ Parse JSON data
-                let displayText = `✅ Scanned Successfully!\n\n`;
+            document.getElementById('result').innerHTML = "✅ Scanned Successfully!\n\n" + qrCodeMessage;
+            document.getElementById('result').style.display = "block";
+            document.getElementById('newScan').style.display = "block";
 
-                // ✅ Display Data Properly
-                for (let key in qrData) {
-                    displayText += `📌 ${key}: ${qrData[key]}\n`;
-                }
-
-                document.getElementById('result').innerHTML = displayText;
-                document.getElementById('result').style.display = "block";
-                document.getElementById('newScan').style.display = "block";
-
-                // Stop scanning
-                html5QrcodeScanner.clear();
-                document.getElementById('reader').style.display = "none";
-            } catch (error) {
-                console.error("QR Parsing Error:", error);
-                document.getElementById('result').innerHTML = "❌ Invalid QR Code Format!";
-                document.getElementById('result').style.display = "block";
-            }
+            // Stop scanning
+            html5QrcodeScanner.clear();
+            document.getElementById('reader').style.display = "none";
         }
 
         function onScanError(errorMessage) {
@@ -104,3 +87,5 @@
 
 </body>
 </html>
+
+Visitor and URL why not showing
