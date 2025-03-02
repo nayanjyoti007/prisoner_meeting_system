@@ -270,13 +270,15 @@ class DashboardController extends Controller
                 // ✅ Simple & Readable QR Code Text (Using Base64 to Avoid Encoding Issues)
                 $qrCodeData = json_encode([
                     'Meeting ID' => $meeting->id,
-                    'Visitor' => $meeting->visitor->name,
+                    'Visitor' => $meeting->visitor->fullname,
                     'Prisoner' => $meeting->prisoner->name,
                     'Jail' => $meeting->jail->name,
                     'Date' => $meeting->meeting_date,
                     'Time' => $meeting->meeting_time,
                     'Status' => 'Approved',
+                    'URL' => url("scanner-update/" . encrypt($meeting->id)) // 🔹 Encrypted ID in URL
                 ]);
+
                 $encodedQrData = base64_encode($qrCodeData);
 
                 // ✅ Generate & Store QR Code
