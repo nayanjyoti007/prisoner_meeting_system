@@ -267,32 +267,30 @@ class DashboardController extends Controller
                 $updateData['rejected_at'] = null;
                 $updateData['rejected_reason'] = null;
 
-                // ✅ Simple & Readable QR Code Text (Using Base64 to Avoid Encoding Issues)
-                $qrCodeData = json_encode([
-                    'Meeting ID' => $meeting->id,
-                    'Visitor' => $meeting->visitor->fullname,
-                    'Prisoner' => $meeting->prisoner->name,
-                    'Jail' => $meeting->jail->name,
-                    'Date' => $meeting->meeting_date,
-                    'Time' => $meeting->meeting_time,
-                    'Status' => 'Approved',
-                    'URL' => url("scanner-update/" . encrypt($meeting->id)) // 🔹 Encrypted ID in URL
-                ]);
+                $qrCodeData = [
+                    "Meeting ID" => $meeting->id,
+                    "Visitor" => $meeting->visitor->fullname,
+                    "Prisoner" => $meeting->prisoner->name,
+                    "Jail" => $meeting->jail->name,
+                    "Date" => $meeting->meeting_date,
+                    "Time" => $meeting->meeting_time,
+                    "Status" => "Approved",
+                    "URL" => url("scanner-update/" . encrypt($meeting->id)) // ✅ Encrypted URL
+                ];
 
-                // dd($qrCodeData);
-                $encodedQrData = base64_encode($qrCodeData);
+                // ✅ Convert JSON to Base64 (Fix Encoding Issues)
+                $encodedQrData = base64_encode(json_encode($qrCodeData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 
-
-
-                // ✅ Generate & Store QR Code
+                // ✅ Generate & Save QR Code
                 $qrCodePath = "qrcodes/meeting_{$meeting->id}.png";
                 Storage::disk('public')->put(
                     $qrCodePath,
                     QrCode::format('png')->size(300)->encoding('UTF-8')->generate($encodedQrData)
                 );
 
-                // ✅ Store QR Code Path in Database
-                $updateData['qr_code'] = $qrCodePath;
+                // ✅ Store Path in Database
+                $meeting->update(['qr_code' => $qrCodePath]);
+
             } elseif ($request->meeting_status === 'Rejected') {
                 $updateData['rejected_at'] = now();
                 $updateData['rejected_reason'] = $request->rejected_reason;
