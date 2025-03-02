@@ -269,7 +269,7 @@ class DashboardController extends Controller
 
                 $qrCodeData = [
                     "Meeting ID" => $meeting->id,
-                    "URL" => url("scanner-update/" . $meeting->id) // ✅ Direct URL without encryption
+                    "URL" => url("admin/scanner-update/" . $meeting->id) // ✅ Direct URL without encryption
                 ];
 
                 // ✅ Convert JSON to Base64 (Ensure Proper Encoding)
