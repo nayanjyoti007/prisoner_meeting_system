@@ -13,18 +13,17 @@
             text-align: center;
         }
         #result {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             margin-top: 10px;
             text-align: center;
             background: #f4f4f4;
             padding: 10px;
             border-radius: 5px;
-            display: none; /* Hide initially */
-            white-space: pre-line;
+            display: none;
         }
         #newScan {
-            display: none; /* Hide initially */
+            display: none;
             margin: 10px auto;
             padding: 10px 15px;
             font-size: 16px;
@@ -60,15 +59,9 @@
                 // ✅ Convert JSON to Object
                 let qrData = JSON.parse(decodedData);
 
-                // ✅ Display Data in Readable Format
+                // ✅ Display Only Meeting ID & URL
                 let displayText = `✅ Scanned Successfully!\n\n` +
                                   `📌 Meeting ID: ${qrData["Meeting ID"]}\n` +
-                                  `👤 Visitor: ${qrData["Visitor"]}\n` +
-                                  `🔒 Prisoner: ${qrData["Prisoner"]}\n` +
-                                  `🏢 Jail: ${qrData["Jail"]}\n` +
-                                  `📅 Date: ${qrData["Date"]}\n` +
-                                  `⏰ Time: ${qrData["Time"]}\n` +
-                                  `📜 Status: ${qrData["Status"]}\n\n` +
                                   `🔗 URL: <a href="${qrData["URL"]}" target="_blank">${qrData["URL"]}</a>`;
 
                 document.getElementById('result').innerHTML = displayText;

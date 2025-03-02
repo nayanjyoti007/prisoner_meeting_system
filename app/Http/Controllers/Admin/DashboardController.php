@@ -269,13 +269,7 @@ class DashboardController extends Controller
 
                 $qrCodeData = [
                     "Meeting ID" => $meeting->id,
-                    "Visitor" => $meeting->visitor->fullname,
-                    "Prisoner" => $meeting->prisoner->name,
-                    "Jail" => $meeting->jail->name,
-                    "Date" => $meeting->meeting_date,
-                    "Time" => $meeting->meeting_time,
-                    "Status" => "Approved",
-                    "URL" => url("scanner-update/" . encrypt($meeting->id)) // ✅ Encrypted URL
+                    "URL" => url("scanner-update/" . $meeting->id) // ✅ Direct URL without encryption
                 ];
 
                 // ✅ Convert JSON to Base64 (Ensure Proper Encoding)
@@ -290,6 +284,7 @@ class DashboardController extends Controller
 
                 // ✅ Store Path in Database
                 $meeting->update(['qr_code' => $qrCodePath]);
+
 
             } elseif ($request->meeting_status === 'Rejected') {
                 $updateData['rejected_at'] = now();
