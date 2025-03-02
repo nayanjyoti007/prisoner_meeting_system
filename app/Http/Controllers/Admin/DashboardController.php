@@ -344,6 +344,8 @@ class DashboardController extends Controller
 
     public function scannerUpdate(Request $request)
     {
+        Log::info('Student ID', [$request->all()]);
+
         $request->validate([
             'qr_code_data' => 'required|string'
         ]);
