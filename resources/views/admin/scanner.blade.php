@@ -13,7 +13,7 @@
             text-align: center;
         }
         #result {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             margin-top: 10px;
             text-align: center;
@@ -21,6 +21,7 @@
             padding: 10px;
             border-radius: 5px;
             display: none; /* Hide initially */
+            white-space: pre-line;
         }
         #newScan {
             display: none; /* Hide initially */
@@ -50,18 +51,31 @@
 
         function onScanSuccess(qrCodeMessage) {
             try {
-                let qrData = JSON.parse(qrCodeMessage);
+                // Decode Base64 Data
+                let decodedData = atob(qrCodeMessage);
+                let qrData = JSON.parse(decodedData); // Convert JSON to Object
 
-                // Show only the encrypted URL
-                document.getElementById('result').innerHTML = "🔐 Encrypted Data:\n\n" + qrData.URL;
+                // Display Data in Readable Format
+                let displayText = `✅ Scanned Successfully!\n\n` +
+                                  `📌 Meeting ID: ${qrData["Meeting ID"]}\n` +
+                                  `👤 Visitor: ${qrData["Visitor"]}\n` +
+                                  `🔒 Prisoner: ${qrData["Prisoner"]}\n` +
+                                  `🏢 Jail: ${qrData["Jail"]}\n` +
+                                  `📅 Date: ${qrData["Date"]}\n` +
+                                  `⏰ Time: ${qrData["Time"]}\n` +
+                                  `📜 Status: ${qrData["Status"]}\n\n` +
+                                  `🔗 URL: ${qrData["URL"]}`;
+
+                document.getElementById('result').innerHTML = displayText;
                 document.getElementById('result').style.display = "block";
                 document.getElementById('newScan').style.display = "block";
 
                 // Stop scanning
                 html5QrcodeScanner.clear();
                 document.getElementById('reader').style.display = "none";
+
             } catch (error) {
-                console.error("Invalid QR Code:", error);
+                console.error("Invalid QR Code or Decoding Error:", error);
                 document.getElementById('result').innerHTML = "⚠️ Invalid QR Code!";
                 document.getElementById('result').style.display = "block";
             }
