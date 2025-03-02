@@ -259,7 +259,7 @@ class DashboardController extends Controller
                 return response()->json(['success' => false, 'message' => 'This meeting is not approved yet.']);
             }
 
-            // Prepare update data
+            // ✅ Prepare Update Data
             $updateData = ['status' => $request->meeting_status];
 
             if ($request->meeting_status === 'Approved') {
@@ -267,20 +267,23 @@ class DashboardController extends Controller
                 $updateData['rejected_at'] = null;
                 $updateData['rejected_reason'] = null;
 
-                // ✅ Simple & Readable QR Code Text
-                $qrCodeText = "Meeting ID: {$meeting->id}\n"
-                    . "Visitor: {$meeting->visitor->name}\n"
-                    . "Prisoner: {$meeting->prisoner->name}\n"
-                    . "Jail: {$meeting->jail->name}\n"
-                    . "Date: {$meeting->meeting_date}\n"
-                    . "Time: {$meeting->meeting_time}\n"
-                    . "Status: Approved";
+                // ✅ Simple & Readable QR Code Text (Using Base64 to Avoid Encoding Issues)
+                $qrCodeData = json_encode([
+                    'Meeting ID' => $meeting->id,
+                    'Visitor' => $meeting->visitor->name,
+                    'Prisoner' => $meeting->prisoner->name,
+                    'Jail' => $meeting->jail->name,
+                    'Date' => $meeting->meeting_date,
+                    'Time' => $meeting->meeting_time,
+                    'Status' => 'Approved',
+                ]);
+                $encodedQrData = base64_encode($qrCodeData);
 
                 // ✅ Generate & Store QR Code
                 $qrCodePath = "qrcodes/meeting_{$meeting->id}.png";
                 Storage::disk('public')->put(
                     $qrCodePath,
-                    QrCode::format('png')->size(300)->generate($qrCodeText)
+                    QrCode::format('png')->size(300)->encoding('UTF-8')->generate($encodedQrData)
                 );
 
                 // ✅ Store QR Code Path in Database
@@ -296,9 +299,9 @@ class DashboardController extends Controller
             // ✅ Update Meeting Request
             $meeting->update($updateData);
 
-            // Create notification for the visitor
+            // ✅ Create Notification for Visitor
             VisitorNotification::create([
-                'visitor_id' => $meeting->visitor_id, // Get from meeting request
+                'visitor_id' => $meeting->visitor_id,
                 'title' => "Meeting status updated to {$request->meeting_status} successfully!",
                 'time_date' => now(),
                 'description' => $request->meeting_status === 'Rejected' ? $request->rejected_reason : null
