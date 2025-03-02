@@ -267,26 +267,23 @@ class DashboardController extends Controller
                 $updateData['rejected_at'] = null;
                 $updateData['rejected_reason'] = null;
 
-                // $qrData = [
-                //     'Meeting ID' => $meeting->id,
-                //     'Visitor' => $meeting->visitor->name,
-                //     'Prisoner' => $meeting->prisoner->name,
-                //     'Jail' => $meeting->jail->name,
-                //     'Date' => $meeting->meeting_date,
-                //     'Time' => $meeting->meeting_time,
-                //     'Status' => 'Approved',
-                // ];
+                // ✅ Simple & Readable QR Code Text
+                $qrCodeText = "Meeting ID: {$meeting->id}\n"
+                    . "Visitor: {$meeting->visitor->name}\n"
+                    . "Prisoner: {$meeting->prisoner->name}\n"
+                    . "Jail: {$meeting->jail->name}\n"
+                    . "Date: {$meeting->meeting_date}\n"
+                    . "Time: {$meeting->meeting_time}\n"
+                    . "Status: Approved";
 
-                $qrCodeText = "Meeting ID: {$meeting->id}, Visitor: {$meeting->visitor->name}, Prisoner: {$meeting->prisoner->name}, Jail: {$meeting->jail->name}, Date: {$meeting->meeting_date}, Time: {$meeting->meeting_time}, Status: Approved";
-
-
+                // ✅ Generate & Store QR Code
                 $qrCodePath = "qrcodes/meeting_{$meeting->id}.png";
                 Storage::disk('public')->put(
                     $qrCodePath,
-                    QrCode::format('png')->size(300)->encoding('UTF-8')->generate($qrCodeText)
+                    QrCode::format('png')->size(300)->generate($qrCodeText)
                 );
 
-                // Store QR Code Path in Database
+                // ✅ Store QR Code Path in Database
                 $updateData['qr_code'] = $qrCodePath;
             } elseif ($request->meeting_status === 'Rejected') {
                 $updateData['rejected_at'] = now();
@@ -296,7 +293,7 @@ class DashboardController extends Controller
                 $updateData['timeout_at'] = now();
             }
 
-            // Update meeting request
+            // ✅ Update Meeting Request
             $meeting->update($updateData);
 
             // Create notification for the visitor
@@ -345,7 +342,7 @@ class DashboardController extends Controller
         return view('admin.scanner');
     }
 
-    public function scanQrCode(Request $request)
+    public function scannerUpdate(Request $request)
     {
         $request->validate([
             'qr_code_data' => 'required|string'
@@ -356,6 +353,8 @@ class DashboardController extends Controller
 
             // ✅ Decode QR Data (Base64 Decoding)
             $decodedData = json_decode(base64_decode($request->qr_code_data), true);
+
+            dd($decodedData);
 
             if (!$decodedData || !isset($decodedData['Meeting ID'])) {
                 return response()->json(['success' => false, 'message' => 'Invalid QR Code.'], 400);

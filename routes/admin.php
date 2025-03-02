@@ -27,6 +27,10 @@ Route::group(['namespace' => 'Admin'], function () {
         return back();
     })->name('admin.cache.clear');
 
+    Route::get('/foo', function () {
+        Artisan::call('storage:link');
+    });
+
 
     Route::group(['middleware' => 'auth:admin', 'prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
