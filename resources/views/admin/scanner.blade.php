@@ -25,7 +25,7 @@
             document.getElementById('result').innerHTML = "✅ Scanned Successfully! Sending Data...";
 
             // ✅ Send QR Code Data to Backend for Attendance Update
-            fetch('/admin/scanner-update', {
+            fetch('https://pakhiinfotech.in/demo/pms/public/admin/scanner-update', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ qr_code_data: qrCodeMessage })
