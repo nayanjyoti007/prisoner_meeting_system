@@ -279,7 +279,6 @@ class DashboardController extends Controller
                     'URL' => url("scanner-update/" . encrypt($meeting->id)) // 🔹 Encrypted ID in URL
                 ]);
 
-                dd($qrCodeData);
 
                 $encodedQrData = base64_encode($qrCodeData);
 
