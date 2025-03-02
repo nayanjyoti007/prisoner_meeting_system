@@ -282,6 +282,8 @@ class DashboardController extends Controller
 
                 $encodedQrData = base64_encode($qrCodeData);
 
+                dd($encodedQrData);
+
                 // ✅ Generate & Store QR Code
                 $qrCodePath = "qrcodes/meeting_{$meeting->id}.png";
                 Storage::disk('public')->put(
