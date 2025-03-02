@@ -12,11 +12,17 @@
             margin: auto;
             text-align: center;
         }
+        #result {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
-    <h2>📷 Scan Your QR Code</h2>
+    <h2 style="text-align:center;">📷 Scan Your QR Code</h2>
     <div id="reader"></div> <!-- QR Code Scanner Container -->
     <p id="result"></p>
 
@@ -25,7 +31,7 @@
             document.getElementById('result').innerHTML = "✅ Scanned Successfully! Sending Data...";
 
             // ✅ Send QR Code Data to Backend for Attendance Update
-            fetch('https://pakhiinfotech.in/demo/pms/public/admin/scanner-update', {
+            fetch('https://ccc.in/demo/pms/public/admin/scanner-update', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ qr_code_data: qrCodeMessage })
@@ -45,11 +51,20 @@
         }
 
         function onScanError(errorMessage) {
-            console.error(errorMessage);
+            console.error("QR Scan Error:", errorMessage);
+            document.getElementById('result').innerHTML = "⚠️ Error: " + errorMessage;
         }
 
-        let html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
-        html5QrcodeScanner.render(onScanSuccess, onScanError);
+        // 🔹 Fix: Ensure camera access
+        navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function() {
+            let html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+            html5QrcodeScanner.render(onScanSuccess, onScanError);
+        })
+        .catch(function(error) {
+            console.error("Camera Access Denied:", error);
+            document.getElementById('result').innerHTML = "🚫 Camera access denied. Please enable camera permissions.";
+        });
     </script>
 
 </body>
