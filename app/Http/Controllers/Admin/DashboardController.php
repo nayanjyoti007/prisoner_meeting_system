@@ -383,7 +383,7 @@ class DashboardController extends Controller
                 $message = '⚠️ Visitor already checked out!';
             }
 
-            dd($meeting);
+            // dd($meeting);
 
             DB::commit();
 
