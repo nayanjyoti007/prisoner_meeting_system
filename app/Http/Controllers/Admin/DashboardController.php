@@ -354,7 +354,7 @@ class DashboardController extends Controller
             // ✅ Decode QR Data (Base64 Decoding)
             $decodedData = json_decode(base64_decode($request->qr_code_data), true);
 
-            dd($decodedData);
+            Log::info('Student ID', [$decodedData]);
 
             if (!$decodedData || !isset($decodedData['Meeting ID'])) {
                 return response()->json(['success' => false, 'message' => 'Invalid QR Code.'], 400);
