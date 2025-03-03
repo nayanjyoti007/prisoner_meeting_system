@@ -25,6 +25,8 @@ class DashboardController extends Controller
     public $today_date;
     public $current_time;
     public $current_datetime;
+    public $today_date_db;
+    public $current_time_db;
 
 
     public function __construct()
@@ -38,6 +40,9 @@ class DashboardController extends Controller
         $this->current_datetime = Carbon::now()
             ->setTimezone('Asia/Kolkata')
             ->format('h:i A d F Y');
+
+        $this->today_date_db = Carbon::now()->setTimezone('Asia/Kolkata')->format('d-m-Y'); // Store Date in "DD-MM-YYYY"
+        $this->current_time_db = Carbon::now()->setTimezone('Asia/Kolkata')->format('h:i A'); // Store Time in "HH:MM AM/PM"
     }
 
     public function dashboard()
@@ -341,7 +346,7 @@ class DashboardController extends Controller
         return view('admin.scanner');
     }
 
-    public function scannerUpdate(Request $request, $id)
+    public function scannerUpdatett(Request $request, $id)
     {
         // $request->validate([
         //     'id' => 'required|numeric|exists:meeting_requests,id'
@@ -355,7 +360,8 @@ class DashboardController extends Controller
 
             // ✅ Ensure Meeting is Approved
             if ($meeting->status !== 'Approved') {
-                return response()->json(['success' => false, 'message' => 'Meeting is not approved.'], 400);
+                // return response()->json(['success' => false, 'message' => 'Meeting is not approved.'], 400);
+                return redirect()->back()->with('success', 'Meeting is not approved');
             }
 
             $currentTime = Carbon::now();
@@ -388,23 +394,76 @@ class DashboardController extends Controller
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => $message,
-                'meeting_id' => $meeting->id,
-                'present_status' => $meeting->present_status,
-                'in_time' => $meeting->in_time,
-                'out_time' => $meeting->out_time
-            ]);
+            // return response()->json([
+            //     'success' => true,
+            //     'message' => $message,
+            //     'meeting_id' => $meeting->id,
+            //     'present_status' => $meeting->present_status,
+            //     'in_time' => $meeting->in_time,
+            //     'out_time' => $meeting->out_time
+            // ]);
+
+            return redirect()->back()->with('success', $message);
         } catch (\Exception $e) {
             DB::rollBack();
 
             Log::error("QR Code Scan Failed: " . $e->getMessage());
 
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred while updating attendance.'
-            ], 500);
+            // return response()->json([
+            //     'success' => false,
+            //     'message' => 'An error occurred while updating attendance.'
+            // ], 500);
+
+            return redirect()->back()->with('success', "An error occurred while updating attendance.");
+        }
+    }
+
+
+    public function scannerUpdate(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
+
+            // ✅ Get Meeting by ID
+            $meeting = MeetingRequest::where('id', $id)->firstOrFail();
+
+            // ✅ Ensure Meeting is Approved
+            if ($meeting->status !== 'Approved') {
+                return redirect()->back()->with('error', '⚠️ Meeting is not approved.');
+            }
+
+            Log::info('Meeting Data', [$meeting]);
+
+            // ✅ Update Attendance in MeetingRequest Table
+            if ($meeting->present_status === 'Pending') {
+                // First Scan → Mark Present & Set `in_time`
+                $meeting->update([
+                    'present_status' => 'Present',
+                    'in_time' => $this->today_date_db . ' ' . $this->current_time_db
+                ]);
+
+                $message = '✅ Visitor checked in successfully!';
+            } elseif ($meeting->present_status === 'Present' && is_null($meeting->out_time)) {
+                // Second Scan → Set `out_time` & Mark Meeting as Completed
+                $meeting->update([
+                    'status' => 'Completed',
+                    'out_time' => $this->today_date_db . ' ' . $this->current_time_db
+                ]);
+
+                $message = '✅ Visitor checked out successfully!';
+            } else {
+                $message = '⚠️ Visitor already checked out!';
+            }
+
+            DB::commit();
+
+            return redirect()->back()->with('success', $message);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::error("QR Code Scan Failed: " . $e->getMessage());
+
+            return redirect()->back()->with('error', "❌ An error occurred while updating attendance.");
         }
     }
 }
