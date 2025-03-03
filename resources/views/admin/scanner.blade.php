@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
             margin: auto;
             text-align: center;
         }
+
         #result {
             font-size: 18px;
             font-weight: bold;
@@ -22,6 +24,7 @@
             border-radius: 5px;
             display: none;
         }
+
         #newScan {
             display: none;
             margin: 10px auto;
@@ -33,14 +36,30 @@
             cursor: pointer;
             border-radius: 5px;
         }
+
         #newScan:hover {
             background-color: #0056b3;
         }
     </style>
 </head>
+
 <body>
 
     <h2 style="text-align:center;">📷 Scan Your QR Code</h2>
+
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+            {{ session('error') }}
+        </div>
+    @endif
+
+
     <div id="reader"></div> <!-- QR Code Scanner Container -->
     <p id="result"></p>
     <button id="newScan" onclick="startNewScan()">🔄 New Scan</button>
@@ -94,21 +113,28 @@
             document.getElementById('reader').style.display = "block";
 
             // Restart the scanner
-            html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+            html5QrcodeScanner = new Html5QrcodeScanner("reader", {
+                fps: 10,
+                qrbox: 250
+            });
             html5QrcodeScanner.render(onScanSuccess, onScanError);
         }
 
         // Ensure camera access before starting scanner
-        navigator.mediaDevices.getUserMedia({ video: true })
-        .then(function() {
-            startNewScan(); // Start the scanner on page load
-        })
-        .catch(function(error) {
-            console.error("Camera Access Denied:", error);
-            document.getElementById('result').innerHTML = "🚫 Camera access denied. Please enable camera permissions.";
-            document.getElementById('result').style.display = "block";
-        });
+        navigator.mediaDevices.getUserMedia({
+                video: true
+            })
+            .then(function() {
+                startNewScan(); // Start the scanner on page load
+            })
+            .catch(function(error) {
+                console.error("Camera Access Denied:", error);
+                document.getElementById('result').innerHTML =
+                    "🚫 Camera access denied. Please enable camera permissions.";
+                document.getElementById('result').style.display = "block";
+            });
     </script>
 
 </body>
+
 </html>
