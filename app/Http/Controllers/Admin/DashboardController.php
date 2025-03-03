@@ -25,8 +25,6 @@ class DashboardController extends Controller
     public $today_date;
     public $current_time;
     public $current_datetime;
-    public $today_date_db;
-    public $current_time_db;
 
 
     public function __construct()
@@ -40,9 +38,6 @@ class DashboardController extends Controller
         $this->current_datetime = Carbon::now()
             ->setTimezone('Asia/Kolkata')
             ->format('h:i A d F Y');
-
-        $this->today_date_db = Carbon::now()->setTimezone('Asia/Kolkata')->format('d-m-Y'); // Store Date in "DD-MM-YYYY"
-        $this->current_time_db = Carbon::now()->setTimezone('Asia/Kolkata')->format('h:i A'); // Store Time in "HH:MM AM/PM"
     }
 
     public function dashboard()
@@ -434,12 +429,14 @@ class DashboardController extends Controller
 
             Log::info('Meeting Data', [$meeting]);
 
+            $currentTime = Carbon::now()->setTimezone('Asia/Kolkata')->format('Y-m-d H:i:s'); // ✅ Correct Timestamp Format
+
             // ✅ Update Attendance in MeetingRequest Table
             if ($meeting->present_status === 'Pending') {
                 // First Scan → Mark Present & Set `in_time`
                 $meeting->update([
                     'present_status' => 'Present',
-                    'in_time' => $this->today_date_db . ' ' . $this->current_time_db
+                    'in_time' => $currentTime
                 ]);
 
                 $message = '✅ Visitor checked in successfully!';
@@ -447,7 +444,7 @@ class DashboardController extends Controller
                 // Second Scan → Set `out_time` & Mark Meeting as Completed
                 $meeting->update([
                     'status' => 'Completed',
-                    'out_time' => $this->today_date_db . ' ' . $this->current_time_db
+                    'out_time' => $currentTime
                 ]);
 
                 $message = '✅ Visitor checked out successfully!';
