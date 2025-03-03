@@ -355,7 +355,8 @@ class DashboardController extends Controller
 
             // ✅ Ensure Meeting is Approved
             if ($meeting->status !== 'Approved') {
-                return response()->json(['success' => false, 'message' => 'Meeting is not approved.'], 400);
+                // return response()->json(['success' => false, 'message' => 'Meeting is not approved.'], 400);
+                return redirect()->back()->with('success', 'Meeting is not approved');
             }
 
             $currentTime = Carbon::now();
@@ -388,23 +389,29 @@ class DashboardController extends Controller
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => $message,
-                'meeting_id' => $meeting->id,
-                'present_status' => $meeting->present_status,
-                'in_time' => $meeting->in_time,
-                'out_time' => $meeting->out_time
-            ]);
+            // return response()->json([
+            //     'success' => true,
+            //     'message' => $message,
+            //     'meeting_id' => $meeting->id,
+            //     'present_status' => $meeting->present_status,
+            //     'in_time' => $meeting->in_time,
+            //     'out_time' => $meeting->out_time
+            // ]);
+
+            return redirect()->back()->with('success', $message);
+
         } catch (\Exception $e) {
             DB::rollBack();
 
             Log::error("QR Code Scan Failed: " . $e->getMessage());
 
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred while updating attendance.'
-            ], 500);
+            // return response()->json([
+            //     'success' => false,
+            //     'message' => 'An error occurred while updating attendance.'
+            // ], 500);
+
+            return redirect()->back()->with('success', "An error occurred while updating attendance.");
+
         }
     }
 }
