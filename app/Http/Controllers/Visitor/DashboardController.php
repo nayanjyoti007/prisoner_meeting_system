@@ -37,7 +37,15 @@ class DashboardController extends Controller
         $visitor_id = Auth::guard('visitor')->id();
         $visitorData = Visitor::where('id', $visitor_id)->first();
         $notifications = VisitorNotification::where('visitor_id', $visitor_id)->where('show_in_dashboard', 0)->where('mark_read', 0)->get();
-        return view('visitor.dashboard', compact('visitorData', 'notifications'));
+
+        $approved_qr = DB::table('meeting_requests')
+            ->select('meeting_requests.*')
+            ->orderBy('meeting_requests.id', 'desc')
+            ->where('meeting_requests.visitor_id', $visitor_id)
+            ->where('meeting_requests.status', 'Approved')
+            ->latest()->first();
+
+        return view('visitor.dashboard', compact('visitorData', 'notifications', 'approved_qr'));
     }
 
     public function kycUpdate(Request $request)

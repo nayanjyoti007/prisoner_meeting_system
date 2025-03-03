@@ -325,6 +325,19 @@
 
                     </div>
                 @elseif ($visitor_kyc_approved == 'Approved')
+                    @if ($approved_qr->qr_code)
+                       <div class="row">
+                        <div class="col-md-2">
+                            <div class="card">
+                                <div class="card-body" style="text-align: center;">
+                                    <h5>Meeting QR Code</h5>
+                                    <img src="{{ asset('storage/' . $approved_qr->qr_code) }}" alt="Meeting QR Code"
+                                        class="img-fluid" style="width: 80%">
+                                </div>
+                            </div>
+                        </div>
+                       </div>
+                    @endif
                 @endif
 
 
