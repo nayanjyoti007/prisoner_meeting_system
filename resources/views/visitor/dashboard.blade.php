@@ -325,7 +325,7 @@
 
                     </div>
                 @elseif ($visitor_kyc_approved == 'Approved')
-                    @if ($approved_qr->qr_code != null)
+                    @if ($approved_qr != null && $approved_qr->qr_code != null)
                        <div class="row">
                         <div class="col-md-2">
                             <div class="card">
