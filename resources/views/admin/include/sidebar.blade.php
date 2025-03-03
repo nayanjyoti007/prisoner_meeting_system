@@ -9,6 +9,14 @@
     </li>
 
 
+    <li class="menu-item">
+        <a href="{{route('admin.scanner')}}" class="menu-link">
+            <i class="menu-icon fa fa-qrcode" aria-hidden="true"></i>
+            <div data-i18n="Analytics">Scanner</div>
+        </a>
+    </li>
+
+
     {{-- <li class="menu-item @yield('admin_centetr_list')">
         <a href="" class="menu-link">
             <i class="menu-icon fa fa-university" aria-hidden="true"></i>
