@@ -48,15 +48,15 @@
     <h2 style="text-align:center;">📷 Scan Your QR Code</h2>
 
     @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+        <p>
             {{ session('success') }}
-        </div>
+        </p>
     @endif
 
     @if (session('error'))
-        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+        <p>
             {{ session('error') }}
-        </div>
+        </p>
     @endif
 
 
