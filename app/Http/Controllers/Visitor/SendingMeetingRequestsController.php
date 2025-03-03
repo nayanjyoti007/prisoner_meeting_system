@@ -19,12 +19,14 @@ class SendingMeetingRequestsController extends Controller
 {
     public function requestlist()
     {
+        $visitor_id = Auth::guard('visitor')->id();
         $data = DB::table('meeting_requests')
             ->join('visitors', 'meeting_requests.visitor_id', '=', 'visitors.id')
             ->join('prisoners', 'meeting_requests.prisoner_id', '=', 'prisoners.id')
             ->join('jails', 'meeting_requests.jail_id', '=', 'jails.id')
             ->select('meeting_requests.*', 'visitors.fullname as visitor_name', 'prisoners.name as prisoner_name', 'jails.name as jail_name')
             ->orderBy('meeting_requests.id', 'desc')
+            ->where('meeting_requests.visitor_id', $visitor_id)
             ->get();
 
         return view('visitor.meeting_request.list', compact('data'));
@@ -43,6 +45,8 @@ class SendingMeetingRequestsController extends Controller
                 'meeting_requests.meeting_time',
                 'meeting_requests.status',
                 'meeting_requests.qr_code',
+                'meeting_requests.in_time',
+                'meeting_requests.out_time',
                 'visitors.fullname as visitor_name',
                 'prisoners.name as prisoner_name',
                 'jails.name as jail_name'
