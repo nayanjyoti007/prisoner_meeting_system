@@ -33,6 +33,93 @@ class SendingMeetingRequestsController extends Controller
     }
 
 
+    public function pending()
+    {
+        $visitor_id = Auth::guard('visitor')->id();
+        $data = DB::table('meeting_requests')
+            ->join('visitors', 'meeting_requests.visitor_id', '=', 'visitors.id')
+            ->join('prisoners', 'meeting_requests.prisoner_id', '=', 'prisoners.id')
+            ->join('jails', 'meeting_requests.jail_id', '=', 'jails.id')
+            ->select('meeting_requests.*', 'visitors.fullname as visitor_name', 'prisoners.name as prisoner_name', 'jails.name as jail_name')
+            ->orderBy('meeting_requests.id', 'desc')
+            ->where('meeting_requests.visitor_id', $visitor_id)
+            ->where('meeting_requests.status', 'Pending')
+            ->get();
+
+        return view('visitor.request.pending', compact('data'));
+    }
+
+
+    public function approved()
+    {
+        $visitor_id = Auth::guard('visitor')->id();
+        $data = DB::table('meeting_requests')
+            ->join('visitors', 'meeting_requests.visitor_id', '=', 'visitors.id')
+            ->join('prisoners', 'meeting_requests.prisoner_id', '=', 'prisoners.id')
+            ->join('jails', 'meeting_requests.jail_id', '=', 'jails.id')
+            ->select('meeting_requests.*', 'visitors.fullname as visitor_name', 'prisoners.name as prisoner_name', 'jails.name as jail_name')
+            ->orderBy('meeting_requests.id', 'desc')
+            ->where('meeting_requests.visitor_id', $visitor_id)
+            ->where('meeting_requests.status', 'Approved')
+            ->get();
+
+        return view('visitor.request.approved', compact('data'));
+    }
+
+
+    public function rejected()
+    {
+        $visitor_id = Auth::guard('visitor')->id();
+        $data = DB::table('meeting_requests')
+            ->join('visitors', 'meeting_requests.visitor_id', '=', 'visitors.id')
+            ->join('prisoners', 'meeting_requests.prisoner_id', '=', 'prisoners.id')
+            ->join('jails', 'meeting_requests.jail_id', '=', 'jails.id')
+            ->select('meeting_requests.*', 'visitors.fullname as visitor_name', 'prisoners.name as prisoner_name', 'jails.name as jail_name')
+            ->orderBy('meeting_requests.id', 'desc')
+            ->where('meeting_requests.visitor_id', $visitor_id)
+            ->where('meeting_requests.status', 'Rejected')
+            ->get();
+
+        return view('visitor.request.rejected', compact('data'));
+    }
+
+    public function completed()
+    {
+        $visitor_id = Auth::guard('visitor')->id();
+        $data = DB::table('meeting_requests')
+            ->join('visitors', 'meeting_requests.visitor_id', '=', 'visitors.id')
+            ->join('prisoners', 'meeting_requests.prisoner_id', '=', 'prisoners.id')
+            ->join('jails', 'meeting_requests.jail_id', '=', 'jails.id')
+            ->select('meeting_requests.*', 'visitors.fullname as visitor_name', 'prisoners.name as prisoner_name', 'jails.name as jail_name')
+            ->orderBy('meeting_requests.id', 'desc')
+            ->where('meeting_requests.visitor_id', $visitor_id)
+            ->where('meeting_requests.status', 'Completed')
+            ->get();
+
+        return view('visitor.request.completed', compact('data'));
+    }
+
+
+    public function absent()
+    {
+        $visitor_id = Auth::guard('visitor')->id();
+        $data = DB::table('meeting_requests')
+            ->join('visitors', 'meeting_requests.visitor_id', '=', 'visitors.id')
+            ->join('prisoners', 'meeting_requests.prisoner_id', '=', 'prisoners.id')
+            ->join('jails', 'meeting_requests.jail_id', '=', 'jails.id')
+            ->select('meeting_requests.*', 'visitors.fullname as visitor_name', 'prisoners.name as prisoner_name', 'jails.name as jail_name')
+            ->orderBy('meeting_requests.id', 'desc')
+            ->where('meeting_requests.visitor_id', $visitor_id)
+            ->where('meeting_requests.status', 'Approved')
+            ->where('meeting_requests.present_status', 'Absent')
+            ->get();
+
+        return view('visitor.request.absent', compact('data'));
+    }
+
+
+
+
     public function requestDetails($id)
     {
         $meeting = DB::table('meeting_requests')

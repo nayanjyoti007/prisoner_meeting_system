@@ -63,6 +63,13 @@ Route::group(['middleware' => 'auth:visitor', 'as' => 'visitor.'], function () {
             Route::post('submit', [SendingMeetingRequestsController::class, 'requestMeeting'])->name('submit');
             Route::get('status/{id}', [SendingMeetingRequestsController::class, 'status'])->name('status');
             Route::get('delete', [SendingMeetingRequestsController::class, 'delete'])->name('delete');
+
+
+            Route::get('pending', [SendingMeetingRequestsController::class, 'pending'])->name('pending');
+            Route::get('absent', [SendingMeetingRequestsController::class, 'absent'])->name('absent');
+            Route::get('approved', [SendingMeetingRequestsController::class, 'approved'])->name('approved');
+            Route::get('completed', [SendingMeetingRequestsController::class, 'completed'])->name('completed');
+            Route::get('rejected', [SendingMeetingRequestsController::class, 'rejected'])->name('rejected');
         });
     });
 });

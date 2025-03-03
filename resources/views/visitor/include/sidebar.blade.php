@@ -30,21 +30,63 @@
 
 
     <li class="menu-item @yield('meeting_request')">
-            <a href="{{route('visitor.sending-meeting-request.form')}}" class="menu-link">
-                <i class="menu-icon fa fa-calendar-minus-o" aria-hidden="true"></i>
-                <div data-i18n="Analytics">Send Request</div>
-            </a>
-        </li>
+        <a href="{{ route('visitor.sending-meeting-request.form') }}" class="menu-link">
+            <i class="menu-icon fa fa-calendar-minus-o" aria-hidden="true"></i>
+            <div data-i18n="Analytics">Send Request</div>
+        </a>
+    </li>
 
 
 
 
     <li class="menu-item @yield('family_member')">
-        <a href="{{route('visitor.family-member.list')}}" class="menu-link">
+        <a href="{{ route('visitor.family-member.list') }}" class="menu-link">
             <i class="menu-icon fa fa-users" aria-hidden="true"></i>
             <div data-i18n="Analytics">Family Members</div>
         </a>
     </li>
+
+
+    <li class="menu-item @yield('manage_request_open')">
+        <a href="javascript:void(0)" class="menu-link menu-toggle">
+            <i class="menu-icon fa fa-list" aria-hidden="true"></i>
+            <div data-i18n="Form Elements"> Manage Request </div>
+        </a>
+        <ul class="menu-sub">
+            <li class="menu-item @yield('meeting_pending')">
+                <a href="{{ route('visitor.sending-meeting-request.pending') }}" class="menu-link">
+                    <div data-i18n="Basic Inputs">Pending</div>
+                </a>
+            </li>
+
+            <li class="menu-item @yield('meeting_approved')">
+                <a href="{{ route('visitor.sending-meeting-request.approved') }}" class="menu-link">
+                    <div data-i18n="Basic Inputs">Approved</div>
+                </a>
+            </li>
+
+            <li class="menu-item @yield('meeting_rejected')">
+                <a href="{{ route('visitor.sending-meeting-request.rejected') }}" class="menu-link">
+                    <div data-i18n="Basic Inputs">Rejected</div>
+                </a>
+            </li>
+
+            <li class="menu-item @yield('meeting_completed')">
+                <a href="{{ route('visitor.sending-meeting-request.completed') }}" class="menu-link">
+                    <div data-i18n="Basic Inputs">Completed</div>
+                </a>
+            </li>
+
+            <li class="menu-item @yield('meeting_absent')">
+                <a href="{{ route('visitor.sending-meeting-request.absent') }}" class="menu-link">
+                    <div data-i18n="Basic Inputs">Absent</div>
+                </a>
+            </li>
+
+        </ul>
+    </li>
+
+
 
 
     @php
@@ -57,16 +99,17 @@
 
 
     <li class="menu-item @yield('notification')">
-        <a href="{{route('visitor.notification')}}" class="menu-link">
+        <a href="{{ route('visitor.notification') }}" class="menu-link">
             <i class="menu-icon fa fa-bell" aria-hidden="true"></i>
-            <div data-i18n="Analytics">Notification <span class="badge badge-center rounded-pill bg-danger">{{$notifications}}</span></div>
+            <div data-i18n="Analytics">Notification <span
+                    class="badge badge-center rounded-pill bg-danger">{{ $notifications }}</span></div>
         </a>
     </li>
 
 
 
     <li class="menu-item @yield('changepassword')">
-        <a href="{{route('visitor.changePasswordForm')}}" class="menu-link">
+        <a href="{{ route('visitor.changePasswordForm') }}" class="menu-link">
             <i class="menu-icon fa fa-key" aria-hidden="true"></i>
             <div data-i18n="Analytics">Change Password</div>
         </a>
