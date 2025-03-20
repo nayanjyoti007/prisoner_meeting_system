@@ -157,6 +157,44 @@
                                 </div>
 
 
+                                <div class="row">
+                                    <div class="mb-4 col-md-7">
+                                        <label class="form-label">Profile Image : </label>
+                                        {{-- <div class="text-danger" id="profile_image_error"></div> --}}
+
+
+                                        <!-- Button to Start Webcam -->
+                                        <button type="button" id="startWebcam"
+                                            class="custom-btn-nnn submit-btn mt-3">Capture My
+                                            Image</button>
+
+                                        <!-- Webcam Video (Initially Hidden) -->
+                                        <video id="video" autoplay playsinline width="300" height="200"
+                                            style="border:1px solid #ccc; display:none;"></video>
+
+                                        <!-- Button to Take Snapshot (Initially Hidden) -->
+                                        <button type="button" id="capture" class="btn btn-primary mt-2"
+                                            style="display:none;">Take Snapshot</button>
+
+                                        <!-- Canvas for Capturing Image (Hidden) -->
+                                        <canvas id="canvas" width="300" height="200"
+                                            style="display:none;"></canvas>
+
+                                        <!-- Hidden Input to Store Base64 Image -->
+                                        <input type="hidden" name="profile_image" id="profile_image">
+
+                                        <div class="text-danger" id="profile_image_error"></div>
+                                    </div>
+
+                                    <!-- Show Captured Image -->
+                                    <div class="mb-4 col-md-5">
+                                        <img id="capturedImage" src="" alt="Captured Image" width="100px"
+                                            style="display:none;">
+
+                                    </div>
+                                </div>
+
+
 
                                 <button type="submit" id="btnSubmit" name="submit"
                                     class="custom-btn submit-btn mt-3 w-100">
@@ -182,6 +220,58 @@
     @section('script')
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <script src="{{ asset('backend_assets/vendor/libs/select2/select2.min.js') }}"></script>
+
+        <script>
+            const startWebcamButton = document.getElementById('startWebcam');
+            const captureButton = document.getElementById('capture');
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const capturedImage = document.getElementById('capturedImage');
+            const profileImageInput = document.getElementById('profile_image');
+            let stream = null; // To store webcam stream
+
+            // Function to Start Webcam
+            async function startCamera() {
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: true
+                    });
+                    video.srcObject = stream;
+                    video.style.display = 'block'; // Show video
+                    captureButton.style.display = 'block'; // Show capture button
+                    startWebcamButton.style.display = 'none'; // Hide "Capture My Image" button
+                } catch (err) {
+                    console.error("Error accessing webcam: ", err);
+                }
+            }
+
+            // Function to Stop Webcam
+            function stopCamera() {
+                if (stream) {
+                    let tracks = stream.getTracks();
+                    tracks.forEach(track => track.stop()); // Stop each track
+                    video.style.display = 'none'; // Hide video
+                }
+            }
+
+            // Start Webcam when Clicking "Capture My Image"
+            startWebcamButton.addEventListener('click', startCamera);
+
+            // Capture Image from Webcam
+            captureButton.addEventListener('click', () => {
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                let imageData = canvas.toDataURL('image/png'); // Convert to Base64
+                capturedImage.src = imageData;
+                capturedImage.style.display = 'block'; // Show captured image preview
+                profileImageInput.value = imageData; // Store Base64 in hidden input
+
+                stopCamera(); // Stop the webcam after capturing
+                captureButton.style.display = 'none'; // Hide Capture button
+            });
+        </script>
+
+
         <script>
             $(document).ready(function() {
 

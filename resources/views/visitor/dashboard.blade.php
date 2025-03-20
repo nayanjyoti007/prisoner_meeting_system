@@ -291,16 +291,48 @@
                                         </div>
                                     </div>
 
+                                    <div class="row">
+                                        <div class="mb-4 col-md-7">
+                                            <label class="form-label">Profile Image : </label>
+
+                                            <!-- Button to Start Webcam -->
+                                            <button type="button" id="startWebcam"
+                                                class="custom-btn-nnn submit-btn mt-3">Capture My
+                                                Image</button>
+
+                                            <!-- Webcam Video (Initially Hidden) -->
+                                            <video id="video" autoplay playsinline width="300" height="200"
+                                                style="border:1px solid #ccc; display:none;"></video>
+
+                                            <!-- Button to Take Snapshot (Initially Hidden) -->
+                                            <button type="button" id="capture" class="btn btn-primary mt-2"
+                                                style="display:none;">Take Snapshot</button>
+
+                                            <!-- Canvas for Capturing Image (Hidden) -->
+                                            <canvas id="canvas" width="300" height="200"
+                                                style="display:none;"></canvas>
+
+                                            <!-- Hidden Input to Store Base64 Image -->
+                                            <input type="hidden" name="profile_image" id="profile_image">
+
+                                            <div class="text-danger" id="profile_proof_error"></div>
+                                        </div>
+
+                                        <!-- Show Captured Image -->
+                                        <div class="mb-4 col-md-5">
+                                            <img id="capturedImage" src="" alt="Captured Image" width="100px"
+                                                style="display:none;">
+                                        </div>
+                                    </div>
+
+
+
 
 
                                     <button type="submit" id="btnSubmit" name="submit"
                                         class="custom-btn submit-btn mt-3 w-100">
                                         Complete Your KYC
                                     </button>
-
-                                    {{-- <a href="" class="custom-btn back-btn mt-3"> <i class="fa fa-arrow-left"
-                                        aria-hidden="true"></i>
-                                    Back</a> --}}
                                 </form>
 
                             </div>
@@ -326,17 +358,17 @@
                     </div>
                 @elseif ($visitor_kyc_approved == 'Approved')
                     @if ($approved_qr != null && $approved_qr->qr_code != null)
-                       <div class="row">
-                        <div class="col-md-2">
-                            <div class="card">
-                                <div class="card-body" style="text-align: center;">
-                                    <h5>Meeting QR Code</h5>
-                                    <img src="{{ asset('storage/' . $approved_qr->qr_code) }}" alt="Meeting QR Code"
-                                        class="img-fluid" style="width: 80%">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="card">
+                                    <div class="card-body" style="text-align: center;">
+                                        <h5>Meeting QR Code</h5>
+                                        <img src="{{ asset('storage/' . $approved_qr->qr_code) }}" alt="Meeting QR Code"
+                                            class="img-fluid" style="width: 80%">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                       </div>
                     @endif
                 @endif
 
@@ -357,7 +389,69 @@
 
 @section('script')
     <script>
+        const startWebcamButton = document.getElementById('startWebcam');
+        const captureButton = document.getElementById('capture');
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const capturedImage = document.getElementById('capturedImage');
+        const profileImageInput = document.getElementById('profile_image');
+        let stream = null; // To store webcam stream
+
+        // Function to Start Webcam
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: true
+                });
+                video.srcObject = stream;
+                video.style.display = 'block'; // Show video
+                captureButton.style.display = 'block'; // Show capture button
+                startWebcamButton.style.display = 'none'; // Hide "Capture My Image" button
+            } catch (err) {
+                console.error("Error accessing webcam: ", err);
+            }
+        }
+
+        // Function to Stop Webcam
+        function stopCamera() {
+            if (stream) {
+                let tracks = stream.getTracks();
+                tracks.forEach(track => track.stop()); // Stop each track
+                video.style.display = 'none'; // Hide video
+            }
+        }
+
+        // Start Webcam when Clicking "Capture My Image"
+        startWebcamButton.addEventListener('click', startCamera);
+
+        // Capture Image from Webcam
+        captureButton.addEventListener('click', () => {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            let imageData = canvas.toDataURL('image/png'); // Convert to Base64
+            capturedImage.src = imageData;
+            capturedImage.style.display = 'block'; // Show captured image preview
+            profileImageInput.value = imageData; // Store Base64 in hidden input
+
+            stopCamera(); // Stop the webcam after capturing
+            captureButton.style.display = 'none'; // Hide Capture button
+        });
+    </script>
+
+
+
+    <script>
         $(document).ready(function() {
+
+            $("#profile_proof").change(function(e) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $("#profile_proofviewImage").attr('src', e.target.result);
+                }
+                reader.readAsDataURL(e.target.files['0']);
+            });
+
+
             $("#visitorKycForm").submit(function(e) {
                 e.preventDefault();
 

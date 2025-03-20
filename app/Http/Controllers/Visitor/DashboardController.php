@@ -80,9 +80,19 @@ class DashboardController extends Controller
                 $visit->voter_proof = FileService::save($request->file('voter_proof'), $folder);
             }
 
+
+            if ($request->profile_image) {
+                $image = $request->profile_image;
+                $image = str_replace('data:image/png;base64,', '', $image);
+                $image = str_replace(' ', '+', $image);
+                $imageName = uniqid() . '.png';
+                \File::put(storage_path('app/public/backend_images/upload/visitor/kyc/' . $imageName), base64_decode($image));
+            }
+
             // Update KYC status to "Update KYC"
             $visit->kyc_status = "Update KYC";
             $visit->kyc_update_date = $this->today_date;
+            $visit->profile_proof = $imageName;
             $visit->save();
 
             // Commit the transaction

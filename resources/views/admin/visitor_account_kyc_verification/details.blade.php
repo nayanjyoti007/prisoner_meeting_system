@@ -42,6 +42,14 @@
                     </tr>
 
                     <tr>
+                        <td>Profile Proof</td>
+                        <td>
+                            <a href="{{ isset($details) ? asset('storage/backend_images/upload/visitor/kyc/' . $details->profile_proof) : '' }}"
+                                target="_blank">View File</a>
+                        </td>
+                    </tr>
+
+                    <tr>
                         <td>Aadhar Proof</td>
                         <td>
                             <a href="{{ isset($details) ? asset('storage/backend_images/upload/visitor/kyc/' . $details->aadhar_proof) : '' }}"

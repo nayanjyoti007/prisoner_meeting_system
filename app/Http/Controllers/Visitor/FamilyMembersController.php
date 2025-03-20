@@ -24,7 +24,8 @@ class FamilyMembersController extends Controller
 
     public function list()
     {
-        $members = FamilyMember::latest()->get();
+        $visitor_id = Auth::guard('visitor')->user()->id;
+        $members = FamilyMember::where('visitor_id', $visitor_id)->latest()->get();
         return view('visitor.members.list', compact('members'));
     }
 
@@ -53,7 +54,8 @@ class FamilyMembersController extends Controller
             'aadhar_number' => 'required|string|size:12|unique:family_members,aadhar_number,' . $request->post('id'),
             'voter_id' => 'required|string|min:10|max:20|unique:family_members,voter_id,' . $request->post('id'),
             'aadhar_proof' => 'required_without:id|file|mimes:jpg,png,pdf|max:2048',
-            'voter_proof' => 'required_without:id|file|mimes:jpg,png,pdf|max:2048'
+            'voter_proof' => 'required_without:id|file|mimes:jpg,png,pdf|max:2048',
+            'profile_image' => 'required_without:id'
         ]);
 
         $id = $request->id;
@@ -87,7 +89,17 @@ class FamilyMembersController extends Controller
             $data->voter_proof = FileService::save($request->file('voter_proof'), $folder);
         }
 
+
+        if ($request->profile_image) {
+            $image = $request->profile_image;
+            $image = str_replace('data:image/png;base64,', '', $image);
+            $image = str_replace(' ', '+', $image);
+            $imageName = uniqid() . '.png';
+            \File::put(storage_path('app/public/backend_images/upload/members/kyc/' . $imageName), base64_decode($image));
+        }
+
         $data->registered_at = $this->today_date;
+        $data->profile_proof = $imageName;
         $data->save();
         return response()->json(['success' => true, 'message' => $msg]);
     }
